@@ -2,6 +2,9 @@ import styled from "styled-components";
 
 export const EditProfileWrap = styled.div`
 padding-bottom: 30px;
+.backimg{
+  cursor: pointer;
+}
   .bgImg {
     width: 100%;
     height: 300px;
@@ -100,6 +103,19 @@ padding-bottom: 30px;
   .inputHolder {
     input {
       color: var(--black);
+    }
+  }
+  .saveBtn{
+    margin-top: 20px;
+  display: flex;
+  justify-content: end;
+  }
+  .inputWrapper{
+    display: block;
+    span{
+      color: red;
+      font-size: 14px;
+      font-weight: bold;
     }
   }
 `;

@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import TextField from "../../TextField/TextField";
 import { FaGreaterThan } from "react-icons/fa6";
 import { serverDomain } from "../../../Constant/serverDomain";
+import Button from "../../Button";
 
 const EditProfile = ({ formData, setFormData, handleChange, user }) => {
   const navigate = useNavigate();
@@ -24,6 +25,7 @@ const EditProfile = ({ formData, setFormData, handleChange, user }) => {
   );
   const [primaryTopicInput, setPrimaryTopicInput] = useState("");
   const [secondaryTopicInput, setSecondaryTopicInput] = useState("");
+  const [errors, setErrors] = useState({});
 
   const backToProfile = () => {
     navigate("/profile");
@@ -31,9 +33,7 @@ const EditProfile = ({ formData, setFormData, handleChange, user }) => {
 
   const handleImageChange = (e, setImage) => {
     const file = e.target?.files[0];
-    console.log("file", file);
     const { name } = e.target;
-    console.log("name", name);
     if (name === "cover") {
       setFormData({ ...formData, cover: file });
     } else {
@@ -64,6 +64,12 @@ const EditProfile = ({ formData, setFormData, handleChange, user }) => {
       });
       setPrimaryTopics([...primaryTopics, primaryTopicInput.trim()]);
       setPrimaryTopicInput("");
+      setErrors((prevErrors) => ({ ...prevErrors, primaryTrainingTopic: "" }));
+    } else {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        primaryTrainingTopic: "Primary topic cannot be empty",
+      }));
     }
   };
 
@@ -78,12 +84,53 @@ const EditProfile = ({ formData, setFormData, handleChange, user }) => {
       });
       setSecondaryTopics([...secondaryTopics, secondaryTopicInput.trim()]);
       setSecondaryTopicInput("");
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        secondaryTrainingTopic: "",
+      }));
+    } else {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        secondaryTrainingTopic: "Secondary topic cannot be empty",
+      }));
     }
   };
 
   const handleKeyPress = (e, addTopic) => {
     if (e.key === "Enter") {
       addTopic();
+    }
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+    setErrors((prevErrors) => ({ ...prevErrors, [name]: "" }));
+  };
+
+  const validateForm = () => {
+    const newErrors = {};
+    if (!formData.firstName) newErrors.firstName = "First Name is required";
+    if (!formData.lastName) newErrors.lastName = "Last Name is required";
+    if (!formData.email) newErrors.email = "Email is required";
+    if (!formData.phone) newErrors.phone = "Contact Number is required";
+    if (!formData.state) newErrors.state = "Country / Region is required";
+    if (!formData.city) newErrors.city = "City is required";
+    if (primaryTopics.length === 0)
+      newErrors.primaryTrainingTopic = "At least one Primary topic is required";
+    if (secondaryTopics.length === 0)
+      newErrors.secondaryTrainingTopic =
+        "At least one Secondary topic is required";
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = () => {
+    if (validateForm()) {
+      console.log("Form is valid. Saving data...");
+      navigate("/About");
+    } else {
+      console.log("Form is invalid. Fix errors and try again.");
     }
   };
 
@@ -153,92 +200,119 @@ const EditProfile = ({ formData, setFormData, handleChange, user }) => {
       <div className="info">
         <h4 className="heading">Profile Info</h4>
         <div className="grid">
-          <TextField
-            parentClass="inputHolder"
-            className="input-field"
-            field_Name="firstName"
-            type="text"
-            label="First Name"
-            name="firstName"
-            bgClr="transparent"
-            value={formData.firstName}
-            onChange={handleChange}
-          />
-          <TextField
-            parentClass="inputHolder"
-            className="input-field"
-            field_Name="lastName"
-            type="text"
-            label="Last Name"
-            name="lastName"
-            bgClr="transparent"
-            value={formData.lastName}
-            onChange={handleChange}
-          />
+          <div className="inputWrapper">
+            <TextField
+              parentClass="inputHolder"
+              className="input-field"
+              field_Name="firstName"
+              type="text"
+              label="First Name"
+              name="firstName"
+              bgClr="transparent"
+              value={formData.firstName}
+              onChange={handleInputChange}
+            />
+            {errors.firstName && (
+              <span className="error">{errors.firstName}</span>
+            )}
+          </div>
+          <div className="inputWrapper">
+            <TextField
+              parentClass="inputHolder"
+              className="input-field"
+              field_Name="lastName"
+              type="text"
+              label="Last Name"
+              name="lastName"
+              bgClr="transparent"
+              value={formData.lastName}
+              onChange={handleInputChange}
+            />
+            {errors.lastName && (
+              <span className="error">{errors.lastName}</span>
+            )}
+          </div>
         </div>
         <div className="grid">
-          <TextField
-            parentClass="inputHolder"
-            className="input-field"
-            field_Name="email"
-            type="email"
-            label="Email id"
-            name="email"
-            bgClr="transparent"
-            value={formData.email}
-            onChange={handleChange}
-          />
-          <TextField
-            parentClass="inputHolder"
-            className="input-field"
-            field_Name="number"
-            type="number"
-            label="Contact Number"
-            name="phone"
-            bgClr="transparent"
-            value={formData.phone}
-            onChange={handleChange}
-          />
+          <div className="inputWrapper">
+            <TextField
+              parentClass="inputHolder"
+              className="input-field"
+              field_Name="email"
+              type="email"
+              label="Email id"
+              name="email"
+              bgClr="transparent"
+              value={formData.email}
+              onChange={handleInputChange}
+            />
+            {errors.email && <span className="error">{errors.email}</span>}
+          </div>
+          <div className="inputWrapper">
+            <TextField
+              parentClass="inputHolder"
+              className="input-field"
+              field_Name="number"
+              type="number"
+              label="Contact Number"
+              name="phone"
+              bgClr="transparent"
+              value={formData.phone}
+              onChange={handleInputChange}
+            />
+            {errors.phone && <span className="error">{errors.phone}</span>}
+          </div>
         </div>
         <div className="grid">
-          <TextField
-            parentClass="inputHolder"
-            className="input-field"
-            field_Name="Country"
-            type="text"
-            label="Country / Region"
-            name="state"
-            bgClr="transparent"
-            value={formData.state}
-            onChange={handleChange}
-          />
-          <TextField
-            parentClass="inputHolder"
-            className="input-field"
-            field_Name="city"
-            type="text"
-            label="City"
-            name="city"
-            bgClr="transparent"
-            value={formData.city}
-            onChange={handleChange}
-          />
+          <div className="inputWrapper">
+            <TextField
+              parentClass="inputHolder"
+              className="input-field"
+              field_Name="Country"
+              type="text"
+              label="Country / Region"
+              name="state"
+              bgClr="transparent"
+              value={formData.state}
+              onChange={handleInputChange}
+            />
+            {errors.state && <span className="error">{errors.state}</span>}
+          </div>
+          <div className="inputWrapper">
+            <TextField
+              parentClass="inputHolder"
+              className="input-field"
+              field_Name="city"
+              type="text"
+              label="City"
+              name="city"
+              bgClr="transparent"
+              value={formData.city}
+              onChange={handleInputChange}
+            />
+            {errors.city && <span className="error">{errors.city}</span>}
+          </div>
         </div>
         <h4 className="heading">Add Primary Training Topic</h4>
         <div className="addTopic">
-          <TextField
-            hasicon={<FaGreaterThan />}
-            parentClass="inputHolder"
-            className="input-field"
-            field_Name="primaryTraining"
-            type="text"
-            placeholder="Training Topics : ( ex : Management ) "
-            name="primaryTraining"
-            bgClr="transparent"
-            value={primaryTopicInput}
-            onChange={(e) => setPrimaryTopicInput(e.target.value)}
-            onKeyPress={(e) => handleKeyPress(e, handleAddPrimaryTopic)}
-          />
+          <div className="inputWrapper">
+            <TextField
+              hasicon={<FaGreaterThan />}
+              parentClass="inputHolder"
+              className="input-field"
+              field_Name="primaryTraining"
+              type="text"
+              placeholder="Training Topics : ( ex : Management ) "
+              name="primaryTraining"
+              bgClr="transparent"
+              value={primaryTopicInput}
+              onChange={(e) => setPrimaryTopicInput(e.target.value)}
+              onKeyPress={(e) => handleKeyPress(e, handleAddPrimaryTopic)}
+            />
+            {errors.primaryTrainingTopic && (
+              <span className="error">{errors.primaryTrainingTopic}</span>
+            )}
+          </div>
         </div>
         <div className="managementWrap">
           <div className="flex">
@@ -249,7 +323,7 @@ const EditProfile = ({ formData, setFormData, handleChange, user }) => {
         </div>
         <h4 className="heading">Add Secondary Training Topic</h4>
         <div className="addTopic">
-          <TextField
+         <div className="inputWrapper"> <TextField
             hasicon={<FaGreaterThan />}
             parentClass="inputHolder"
             className="input-field"
@@ -262,6 +336,9 @@ const EditProfile = ({ formData, setFormData, handleChange, user }) => {
             onChange={(e) => setSecondaryTopicInput(e.target.value)}
             onKeyPress={(e) => handleKeyPress(e, handleAddSecondaryTopic)}
           />
+          {errors.secondaryTrainingTopic && (
+            <span className="error">{errors.secondaryTrainingTopic}</span>
+          )}</div>
         </div>
         <div className="managementWrap">
           <div className="flex">
@@ -270,6 +347,11 @@ const EditProfile = ({ formData, setFormData, handleChange, user }) => {
             ))}
           </div>
           <button>+</button>
+        </div>
+        <div className="saveBtn">
+          <Button width="180px" className="button" onClick={handleSubmit}>
+            Save
+          </Button>
         </div>
       </div>
     </EditProfileWrap>

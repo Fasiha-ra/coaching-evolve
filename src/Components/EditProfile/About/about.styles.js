@@ -6,7 +6,7 @@ export const AboutWrap = styled.div`
     align-items: center;
   }
   p {
-    color: var(--gray-50);
+    color: var(--light-gray);
   }
   .textareaHolder{
     min-height: 300px;
@@ -17,5 +17,13 @@ export const AboutWrap = styled.div`
   button{
     display: block;
     margin-left: auto;
+  }
+  .inputWrapper{
+    display: block;
+    span{
+      color: red;
+      font-size: 14px;
+      font-weight: bold;
+    }
   }
 `;
