@@ -6,24 +6,37 @@ import Button from "../../Button";
 import { SkillWrap } from "./skill.styles";
 import { FaGreaterThan } from "react-icons/fa6";
 
-const ProfileSkills = ({ formData, setFormData, handleChange ,handleSubmit}) => {
+const ProfileSkills = ({ formData, setFormData, handleChange, handleSubmit }) => {
   const navigate = useNavigate();
-  const [skills, setSkills] = useState(formData?.skills);
+  const [skills, setSkills] = useState(formData?.skills || []);
   const [skillInput, setSkillInput] = useState("");
+  const [error, setError] = useState("");
 
   const backToProfile = () => {
     navigate("/profile");
   };
 
   const handleAddSkill = () => {
-    if (skillInput.trim() !== "" && skills.length < 5) {
-      setFormData({
-        ...formData,
-        skills: [...skills, skillInput.trim()],
-      })
-      setSkills([...skills, skillInput.trim()]);
-      setSkillInput("");
+    if (skillInput.trim() === "") {
+      setError("Skill cannot be empty.");
+      return;
     }
+    if (skills.length >= 5) {
+      setError("You can only add up to 5 skills.");
+      return;
+    }
+    if (skills.includes(skillInput.trim())) {
+      setError("Skill already exists.");
+      return;
+    }
+    
+    setFormData({
+      ...formData,
+      skills: [...skills, skillInput.trim()],
+    });
+    setSkills([...skills, skillInput.trim()]);
+    setSkillInput("");
+    setError(""); // Clear the error message on successful addition
   };
 
   const handleKeyPress = (e) => {
@@ -33,8 +46,20 @@ const ProfileSkills = ({ formData, setFormData, handleChange ,handleSubmit}) => 
   };
 
   const handleSave = () => {
+    if (skills.length === 0) {
+      setError("Please add at least one skill before saving.");
+      return;
+    }
     console.log("Skills:", skills);
-    handleSubmit();
+    // handleSubmit();
+    navigate("/experience")
+  };
+
+  const handleInputChange = (e) => {
+    setSkillInput(e.target.value);
+    if (error) {
+      setError(""); // Clear error message when the input changes
+    }
   };
 
   return (
@@ -44,7 +69,8 @@ const ProfileSkills = ({ formData, setFormData, handleChange ,handleSubmit}) => 
         <h4 className="heading">Add Skills</h4>
       </div>
       <p>Show your top skills — add up to 5 skills you want to be known for.</p>
-      <TextField
+     <div className="inputWrapper">
+     <TextField
         hasicon={<FaGreaterThan />}
         parentClass="inputHolder"
         className="input-field"
@@ -53,10 +79,12 @@ const ProfileSkills = ({ formData, setFormData, handleChange ,handleSubmit}) => 
         placeholder="Skills : ( ex : Management )"
         name="skills"
         value={skillInput}
-        onChange={(e) => setSkillInput(e.target.value)}
+        onChange={handleInputChange}
         onKeyPress={handleKeyPress}
         bgClr="transparent"
       />
+      {error && <span className="error-message">{error}</span>}
+     </div>
       <div className="managementWrap">
         <div className="flex">
           {skills.map((skill, index) => (
