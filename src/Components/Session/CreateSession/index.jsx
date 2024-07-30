@@ -20,11 +20,7 @@ const CreateSession = ({ click, onSave, user, data }) => {
   const navigate = useNavigate();
 
   const [sessionOptions, setSessionOptions] = useState([
-    {
-      label: "individual",
-      value: "individual",
-      checked: false,
-    },
+    { label: "individual", value: "individual", checked: false },
     { label: "Group Session", value: "Group Session", checked: false },
   ]);
 
@@ -55,6 +51,7 @@ const CreateSession = ({ click, onSave, user, data }) => {
   const [uploadedImage, setUploadedImage] = useState(null);
   const [image, setImage] = useState(null);
   const [sessionTitle, setSessionTitle] = useState("");
+  const [errors, setErrors] = useState({});
 
   const handleAddTopic = () => {
     setTopics([...topics, { title: "", description: "" }]);
@@ -64,6 +61,9 @@ const CreateSession = ({ click, onSave, user, data }) => {
     const newTopics = [...topics];
     newTopics[index][field] = value;
     setTopics(newTopics);
+    if (value) {
+      setErrors((prev) => ({ ...prev, topics: "" }));
+    }
   };
 
   const handleImageUpload = (event) => {
@@ -79,6 +79,23 @@ const CreateSession = ({ click, onSave, user, data }) => {
   };
 
   const handleSave = async () => {
+    const newErrors = {};
+    if (!sessionTitle) newErrors.sessionTitle = "Session title is required.";
+    if (!about) newErrors.about = "About is required.";
+    if (!image) newErrors.image = "Image is required.";
+    if (!startDate) newErrors.startDate = "Start date is required.";
+    if (!startTime) newErrors.startTime = "Start time is required.";
+    if (!endDate) newErrors.endDate = "End date is required.";
+    if (!endTime) newErrors.endTime = "End time is required.";
+    if (!sessionURL) newErrors.sessionURL = "Session URL is required.";
+    if (!topics.every((topic) => topic.title && topic.description))
+      newErrors.topics = "All topics must have a title and description.";
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
+
     try {
       const formData = new FormData();
       formData.append("file", image);
@@ -88,7 +105,6 @@ const CreateSession = ({ click, onSave, user, data }) => {
           "Content-Type": "multipart/form-data",
         },
       });
-      console.log(imgResult);
 
       const newSession = {
         sessionCatId: 1,
@@ -111,13 +127,11 @@ const CreateSession = ({ click, onSave, user, data }) => {
         coachId: data?.id || user,
       };
 
-      console.log(newSession);
       const res = await axios.post(`${serverDomain}/session`, newSession, {
         headers: {
           "Content-Type": "application/json",
         },
       });
-      console.log(res);
       navigate("/dashboard");
     } catch (error) {
       console.log(error);
@@ -143,7 +157,8 @@ const CreateSession = ({ click, onSave, user, data }) => {
             options={sessionOptions}
             setOptions={setSessionOptions}
           />
-          <TextField
+         <div className="inputWrapper">
+           <TextField
             parentClass="inputHolder"
             className="input-field"
             field_Name="title"
@@ -152,117 +167,184 @@ const CreateSession = ({ click, onSave, user, data }) => {
             name="title"
             bgClr="transparent"
             value={sessionTitle}
-            onChange={(e) => setSessionTitle(e.target.value)}
+            onChange={(e) => {
+              setSessionTitle(e.target.value);
+              if (e.target.value) {
+                setErrors((prev) => ({ ...prev, sessionTitle: "" }));
+              }
+            }}
           />
+          {errors.sessionTitle && (
+            <span className="error">{errors.sessionTitle}</span>
+          )}
+         </div>
+          <div className="inputWrapper">
           <TextField
             variant="textarea"
             label="About"
             parentClass="textareaHolder"
             value={about}
-            onChange={(e) => setAbout(e.target.value)}
+            onChange={(e) => {
+              setAbout(e.target.value);
+              if (e.target.value) {
+                setErrors((prev) => ({ ...prev, about: "" }));
+              }
+            }}
           />
+          {errors.about && <span className="error">{errors.about}</span>}
+          </div>
           <div className="timeWrap">
             <span className="heading">Date & Time</span>
             <div className="flex">
               <div className="start">
                 <span className="heading">Start From</span>
                 <div className="btnFlex">
-                  <strong>
+                 <div className="inputWrapper">
+                 <strong>
                     <img src={date} alt="date" />
                     <DatePicker
                       selected={startDate}
-                      onChange={(date) => setStartDate(date)}
+                      onChange={(date) => {
+                        setStartDate(date);
+                        if (date) {
+                          setErrors((prev) => ({ ...prev, startDate: "" }));
+                        }
+                      }}
                       dateFormat="yyyy/MM/dd"
                       placeholderText="Select Date"
+                      minDate={new Date()}
                     />
                   </strong>
-                  <strong>
+                  {errors.startDate && (
+                    <span className="error">{errors.startDate}</span>
+                  )}
+                 </div>
+                 <div className="Wrapper">
+                 <strong>
                     <img src={time} alt="time" />
                     <TimePicker
-                      onChange={setStartTime}
+                      onChange={(time) => {
+                        setStartTime(time);
+                        if (time) {
+                          setErrors((prev) => ({ ...prev, startTime: "" }));
+                        }
+                      }}
                       value={startTime}
                       disableClock={true}
                       format="hh:mm a"
                     />
                   </strong>
+                  {errors.startTime && (
+                    <span className="error">{errors.startTime}</span>
+                  )}
+                 </div>
                 </div>
               </div>
               <div className="end">
                 <span className="heading">Ends On</span>
                 <div className="btnFlex">
-                  <strong>
+                 <div className="inputWrapper">
+                 <strong>
                     <img src={date} alt="date" />
                     <DatePicker
                       selected={endDate}
-                      onChange={(date) => setEndDate(date)}
+                      onChange={(date) => {
+                        setEndDate(date);
+                        if (date) {
+                          setErrors((prev) => ({ ...prev, endDate: "" }));
+                        }
+                      }}
                       dateFormat="yyyy/MM/dd"
                       placeholderText="Select Date"
+                      minDate={startDate || new Date()}
                     />
                   </strong>
-                  <strong>
+                  {errors.endDate && (
+                    <span className="error">{errors.endDate}</span>
+                  )}
+                 </div>
+                 <div className="Wrapper">
+                 <strong>
                     <img src={time} alt="time" />
                     <TimePicker
-                      onChange={setEndTime}
+                      onChange={(time) => {
+                        setEndTime(time);
+                        if (time) {
+                          setErrors((prev) => ({ ...prev, endTime: "" }));
+                        }
+                      }}
                       value={endTime}
                       disableClock={true}
                       format="hh:mm a"
                     />
                   </strong>
+                  {errors.endTime && (
+                    <span className="error">{errors.endTime}</span>
+                  )}
+                 </div>
                 </div>
               </div>
             </div>
           </div>
-          <div className="Upload">
-            <span className="heading">Upload</span>
-            <label htmlFor="uploadImage">
-              <div className="uploadImage">
-                <input
-                  type="file"
-                  id="uploadImage"
-                  onChange={handleImageUpload}
-                  accept="image/*"
-                  hidden
-                />
-                {uploadedImage ? (
-                  <div className="uploadPlaceholder">
-                    <img src={uploadedImage} alt="uploaded" />
-                  </div>
-                ) : (
-                  <div className="uploadPlaceholder">
-                    <img src={upload} alt="upload" />
-                  </div>
-                )}
-              </div>
-            </label>
+
+          <div className="upload">
+            <div className="Upload">
+              <span className="heading">Upload Image</span>
+              <div className="inputWrapper">
+                <div className="uploadImage">
+                  <input
+                    type="file"
+                    id="uploadImage"
+                    onChange={handleImageUpload}
+                    accept="image/*"
+                    hidden
+                  />
+                  {uploadedImage ? (
+                    <div className="uploadPlaceholder">
+                      <img src={uploadedImage} alt="uploaded" />
+                    </div>
+                  ) : (
+                    <div className="uploadPlaceholder">
+                      <img src={upload} alt="upload" />
+                    </div>
+                  )}
+                  {errors.image && (
+                    <span className="error">{errors.image}</span>
+                  )}
+                </div>
+                </div>
+            </div>
           </div>
           <div className="addTopic">
-            <h4 className="title">Add Topics</h4>
-            {topics.map((topic, index) => (
-              <div key={index} className="topicInput">
-                <TextField
-                  parentClass="inputHolder"
-                  className="input-field"
-                  field_Name="title"
-                  type="text"
-                  label={`Title ${index + 1}`}
-                  name={`title-${index}`}
-                  bgClr="transparent"
-                  value={topic.title}
-                  onChange={(e) =>
-                    handleTopicChange(index, "title", e.target.value)
-                  }
-                />
-                <TextField
-                  variant="textarea"
-                  label="Description"
-                  parentClass="textareaHolder"
-                  value={topic.description}
-                  onChange={(e) =>
-                    handleTopicChange(index, "description", e.target.value)
-                  }
-                />
-              </div>
-            ))}
+             <h4 className="title">Add Topics</h4>
+          {topics.map((topic, index) => (
+            <div className="topic" key={index}>
+              <TextField
+                parentClass="inputHolder"
+                className="input-field"
+                field_Name="title"
+                type="text"
+                label={`Title ${index + 1} `}
+                name={`topicTitle${index}`}
+                bgClr="transparent"
+                value={topic.title}
+                onChange={(e) =>
+                  handleTopicChange(index, "title", e.target.value)
+                }
+              />
+              <TextField
+                variant="textarea"
+                label=" Description"
+                parentClass="textareaHolder"
+                value={topic.description}
+                onChange={(e) =>
+                  handleTopicChange(index, "description", e.target.value)
+                }
+              />
+            </div>
+          ))}
+          {errors.topics && <span className="error">{errors.topics}</span>}</div>
+          <div className="addMore">
             <Button
               className="addButton"
               width="180px"
@@ -275,33 +357,53 @@ const CreateSession = ({ click, onSave, user, data }) => {
             <h4 className="title">Session Info</h4>
             <div className="flexWrap">
               <div className="drop1">
+
                 <Dropdown
-                  width="300px"
-                  label="Session Type"
+                  width="500px"
+                  label="Session For"
                   options={sessionTypeOptions}
                   setOptions={setSessionTypeOptions}
                 />
               </div>
               <div className="drop2">
                 <Dropdown
-                  width="300px"
-                  label="Session For"
+                  width="500px"
+                  label="Session For Role"
                   options={sessionRoleOptions}
                   setOptions={setSessionRoleOptions}
                 />
               </div>
             </div>
           </div>
-          <h4 className="title">Session URL</h4>
-          <TextField
+<div className="inputWrapper">
+  
+<TextField
             parentClass="inputHolder"
             className="input-field"
-            field_Name="title"
+            field_Name="url"
             type="text"
+            label="Session URL"
+            name="sessionUrl"
+            bgClr="transparent"
             value={sessionURL}
-            onChange={(e) => setSessionURL(e.target.value)}
+            onChange={(e) => {
+              setSessionURL(e.target.value);
+              if (e.target.value) {
+                setErrors((prev) => ({ ...prev, sessionURL: "" }));
+              }
+            }}
           />
-          <Button className="saveSession" width="230px" onClick={handleSave}>
+          {errors.sessionURL && (
+            <span className="error">{errors.sessionURL}</span>
+          )}
+</div>
+
+          <Button
+            width="230px"
+            className="saveSession"
+            variant="primary"
+            onClick={handleSave}
+          >
             Save
           </Button>
         </div>

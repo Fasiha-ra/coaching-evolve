@@ -91,4 +91,14 @@ export const ExperienceWrap = styled.div`
   .checkbox {
     margin-right: 10px;
   }
+  .inputWrapper{
+    display: block;
+    span{
+      color: red;
+      font-size: 14px;
+      font-weight: bold;
+      margin-bottom: 10px;
+      display: block;
+    }
+  }
 `;

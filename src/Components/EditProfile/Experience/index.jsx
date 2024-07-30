@@ -8,7 +8,7 @@ import { RiArrowDropDownLine } from "react-icons/ri";
 
 const Experience = ({ formData, setFormData, handleChange, handleSubmit }) => {
   const [description, setDescription] = useState(
-    formData?.coachingExperience[0]?.description
+    formData?.coachingExperience[0]?.description || ""
   );
   const navigate = useNavigate();
   const backToProfile = () => {
@@ -17,6 +17,11 @@ const Experience = ({ formData, setFormData, handleChange, handleSubmit }) => {
 
   const [experienceDropdownOpen, setExperienceDropdownOpen] = useState(false);
   const [yearsDropdownOpen, setYearsDropdownOpen] = useState(false);
+  const [error, setError] = useState({
+    experience: "",
+    years: "",
+    description: ""
+  });
 
   const [experienceOptions, setExperienceOptions] = useState([
     { label: "Women Empowerment", value: "WomenEmpowerment", checked: false },
@@ -50,14 +55,15 @@ const Experience = ({ formData, setFormData, handleChange, handleSubmit }) => {
 
   const handleCheckboxChange = (index, options, setOptions) => {
     const newOptions = [...options];
-
     newOptions[index].checked = !newOptions[index].checked;
     setOptions(newOptions);
+    setError((prev) => ({ ...prev, experience: "", years: "" })); // Clear error messages
   };
 
   const toggleDropdown = (setDropdownOpen, otherDropdownSetOpen) => {
     setDropdownOpen((prevState) => !prevState);
     otherDropdownSetOpen(false);
+    setError((prev) => ({ ...prev, experience: "", years: "" })); // Clear error messages
   };
 
   const getSelectedOptionsText = (options) => {
@@ -77,11 +83,9 @@ const Experience = ({ formData, setFormData, handleChange, handleSubmit }) => {
           .filter((o) => o.label === element)
           .map((option) => (option.checked = true));
       });
-      console.log(titles);
       const years = formData.coachingExperience?.map(
         (y) => y.yearsOfExperience
       );
-      console.log(years);
       years.forEach((elem) => {
         yearsOptions
           .filter((i) => i.label === elem)
@@ -96,8 +100,6 @@ const Experience = ({ formData, setFormData, handleChange, handleSubmit }) => {
     const selectedYears = yearsOptions
       .filter((option) => option.checked)
       .map((checked) => checked.label);
-      console.log(selectedYears)
-  
 
     const data = selectedTitles.map((title, index) => ({
       title,
@@ -108,11 +110,51 @@ const Experience = ({ formData, setFormData, handleChange, handleSubmit }) => {
     setFormData({
       ...formData,
       coachingExperience: data,
-      // yearOfExperience:selectedYears.join(" ")
     });
-
-    console.log(formData);
   }, [experienceOptions, yearsOptions, description]);
+
+  const handleSave = () => {
+    const selectedTitles = experienceOptions.filter((option) => option.checked);
+    const selectedYears = yearsOptions.filter((option) => option.checked);
+
+    let newError = {
+      experience: "",
+      years: "",
+      description: ""
+    };
+
+    if (selectedTitles.length === 0) {
+      newError.experience = "Please select at least one coaching experience.";
+    }
+
+    if (selectedYears.length === 0) {
+      newError.years = "Please select years of experience.";
+    }
+
+    if (description.trim() === "") {
+      newError.description = "Please provide a description.";
+    }
+
+    if (newError.experience || newError.years || newError.description) {
+      setError(newError);
+      return;
+    }
+
+    setError({
+      experience: "",
+      years: "",
+      description: ""
+    });
+    // handleSubmit();
+    navigate("/education")
+  };
+
+  const handleInputChange = (e) => {
+    setDescription(e.target.value);
+    if (error.description) {
+      setError((prev) => ({ ...prev, description: "" })); // Clear error message when input changes
+    }
+  };
 
   return (
     <ExperienceWrap>
@@ -121,7 +163,8 @@ const Experience = ({ formData, setFormData, handleChange, handleSubmit }) => {
         <h4 className="heading">Add Coaching Experience</h4>
       </div>
       <p>Add your past or current working position</p>
-      <label>
+     <div className="inputWrapper">
+     <label>
         Coaching Experience
         <div className="dropdown-container">
           <div
@@ -156,8 +199,11 @@ const Experience = ({ formData, setFormData, handleChange, handleSubmit }) => {
             </div>
           )}
         </div>
+        {error.experience && <span className="error-message">{error.experience}</span>}
       </label>
-      <label>
+     </div>
+     <div className="inputWrapper">
+     <label>
         Experience in Years
         <div className="dropdown-container">
           <div
@@ -188,15 +234,20 @@ const Experience = ({ formData, setFormData, handleChange, handleSubmit }) => {
             </div>
           )}
         </div>
+        {error.years && <span className="error-message">{error.years}</span>}
       </label>
-      <TextField
+     </div>
+     <div className="inputWrapper">
+     <TextField
         variant="textarea"
         label="Description"
         parentClass="textareaHolder"
         value={description}
-        onChange={(e) => setDescription(e.target.value)}
+        onChange={handleInputChange}
       />
-      <Button width="177px" onClick={handleSubmit}>
+      {error.description && <span className="error-message">{error.description}</span>}
+     </div>
+      <Button width="177px" onClick={handleSave}>
         Save
       </Button>
       <button className="bton">+</button>

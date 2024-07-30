@@ -51,5 +51,14 @@ export const CertificateWrap = styled.div`
   input{
     color: var(--black);
   }
-
+  .inputWrapper{
+    display: block;
+    span{
+      color: red;
+      font-size: 14px;
+      font-weight: bold;
+      margin-bottom: 10px;
+      display: block;
+    }
+  }
 `;

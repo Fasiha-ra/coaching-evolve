@@ -35,4 +35,14 @@ export const EducationWrap = styled.div`
   input{
     color: var(--black);
   }
+  .inputWrapper{
+    display: block;
+    p{
+      color: red;
+      font-size: 14px;
+      font-weight: bold;
+      margin-bottom: 10px;
+      display: block;
+    }
+  }
 `;

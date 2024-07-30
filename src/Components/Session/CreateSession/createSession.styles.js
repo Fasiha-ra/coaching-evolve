@@ -59,6 +59,7 @@ export const CreateWrapper = styled.div`
     .btnFlex {
       display: flex;
       gap: 20px;
+      flex-wrap: wrap;
       strong {
         display: flex;
         border: 1px solid var(--gray-30);
@@ -124,5 +125,23 @@ export const CreateWrapper = styled.div`
   .addTopic{
     padding-bottom: 20px;
   }
+  .inputWrapper{
+    display: block;
+    span{
+      color: red;
+      font-size: 14px;
+      font-weight: bold;
+      margin-bottom: 10px;
+      display: block;
+    }
+  }
+  .Wrapper{
+    span{
+      color: red;
+      font-size: 14px;
+      font-weight: bold;
+      margin-bottom: 10px;
  
+    }
+  }
 `;

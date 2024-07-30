@@ -1,7 +1,7 @@
 import React from "react";
 import { TitleWrap } from "./Title.styles";
-import people from "../../../assets/session/employes.png";
-import person from "../../../assets/session/employe.png";
+import people from "../../../assets/session/proples.png";
+import person from "../../../assets/session/person.png";
 import { FaPencilAlt } from "react-icons/fa";
 import { FaEye } from "react-icons/fa";
 

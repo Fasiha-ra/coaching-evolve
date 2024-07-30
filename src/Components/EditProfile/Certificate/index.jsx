@@ -6,14 +6,30 @@ import Button from "../../Button";
 import { CertificateWrap } from "./certificate.styles";
 import { serverDomain } from "../../../Constant/serverDomain";
 
-const Certificate = ({ formData, setFormData, handleChange, handleSubmit,user }) => {
+const Certificate = ({ formData, setFormData, handleChange, handleSubmit, user }) => {
   const navigate = useNavigate();
   const [certificateImage, setCertificateImage] = useState(
     formData?.id || user ? null : ""
-  ); // State to store the selected image file
+  );
+  const [errors, setErrors] = useState({});
 
   const backToProfile = () => {
     navigate("/EditProfile");
+  };
+
+  const validateForm = () => {
+    const newErrors = {};
+    if (!formData.certificates[0]?.title) {
+      newErrors.title = "Title is required";
+    }
+    if (!formData.certificates[0]?.description) {
+      newErrors.description = "Description is required";
+    }
+    if (!certificateImage && !formData.certificates[0]?.image) {
+      newErrors.image = "An image is required";
+    }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleImageChange = (e) => {
@@ -35,8 +51,22 @@ const Certificate = ({ formData, setFormData, handleChange, handleSubmit,user })
         ],
       });
       setCertificateImage(file);
+      setErrors((prevErrors) => {
+        const { image, ...rest } = prevErrors;
+        return rest;
+      });
     } else {
-      alert("Please select a valid image file (jpg, jpeg, png)");
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        image: "Please select a valid image file (jpg, jpeg, png)",
+      }));
+    }
+  };
+
+  const handleSubmitWithValidation = () => {
+    if (validateForm()) {
+      // handleSubmit();
+      navigate("/setting")
     }
   };
 
@@ -44,9 +74,10 @@ const Certificate = ({ formData, setFormData, handleChange, handleSubmit,user })
     <CertificateWrap>
       <div className="info" onClick={backToProfile}>
         <img src={backimg} alt="" />
-        <h4 className="heading">Add certificates </h4>
+        <h4 className="heading">Add certificates</h4>
       </div>
       <p>Add your certificate details</p>
+      <div className="inputWrapper">
       <TextField
         parentClass="inputHolder"
         className="input-field"
@@ -68,6 +99,9 @@ const Certificate = ({ formData, setFormData, handleChange, handleSubmit,user })
           });
         }}
       />
+      {errors.title && <span className="error">{errors.title}</span>}
+      </div>
+      <div className="inputWrapper">
       <TextField
         variant="textarea"
         label="Description"
@@ -85,8 +119,11 @@ const Certificate = ({ formData, setFormData, handleChange, handleSubmit,user })
           });
         }}
       />
+      {errors.description && <span className="error">{errors.description}</span>}
+      </div>
       <div className="img">
         <span>Image</span>
+        <div className="inputWrapper">
         <div className="imgWrap">
           <img
             src={
@@ -97,9 +134,6 @@ const Certificate = ({ formData, setFormData, handleChange, handleSubmit,user })
             alt="Certificate"
             style={{ width: "100%", height: "100%", borderRadius: "5px" }}
           />
-
-          {/* <button className="bton">+</button> */}
-
           <input
             type="file"
             accept="image/jpeg, image/png, image/jpg"
@@ -112,8 +146,10 @@ const Certificate = ({ formData, setFormData, handleChange, handleSubmit,user })
             onChange={handleImageChange}
           />
         </div>
+        {errors.image && <span className="error">{errors.image}</span>}
+        </div>
       </div>
-      <Button width="177px" onClick={handleSubmit}>
+      <Button width="177px" onClick={handleSubmitWithValidation}>
         Save
       </Button>
     </CertificateWrap>
