@@ -66,23 +66,41 @@ const CreateSession = ({ click, onSave, user, data }) => {
     }
   };
 
-  const handleImageUpload = (event) => {
-    const file = event.target.files[0];
+  // const handleImageUpload = (event) => {
+  //   const file = event.target.files[0];
+  //   if (file) {
+  //     setImage(file);
+  //     const reader = new FileReader();
+  //     reader.onloadend = () => {
+  //       setUploadedImage(reader.result);
+  //     };
+  //     reader.readAsDataURL(file);
+  //   }
+  // };
+ 
+  const handleImageUpload = (e) => {
+    const file = e.target.files[0];
     if (file) {
-      setImage(file);
       const reader = new FileReader();
       reader.onloadend = () => {
         setUploadedImage(reader.result);
+        setErrors((prev) => ({ ...prev, image: "" })); // Clear error if image is uploaded
       };
       reader.readAsDataURL(file);
     }
   };
 
+
+  const handleClick = () => {
+    document.getElementById('uploadImage').click();
+  };
+
+
   const handleSave = async () => {
     const newErrors = {};
+    if (!image) newErrors.image = "Image is required.";
     if (!sessionTitle) newErrors.sessionTitle = "Session title is required.";
     if (!about) newErrors.about = "About is required.";
-    if (!image) newErrors.image = "Image is required.";
     if (!startDate) newErrors.startDate = "Start date is required.";
     if (!startTime) newErrors.startTime = "Start time is required.";
     if (!endDate) newErrors.endDate = "End date is required.";
@@ -157,41 +175,41 @@ const CreateSession = ({ click, onSave, user, data }) => {
             options={sessionOptions}
             setOptions={setSessionOptions}
           />
-         <div className="inputWrapper">
-           <TextField
-            parentClass="inputHolder"
-            className="input-field"
-            field_Name="title"
-            type="text"
-            label="Title"
-            name="title"
-            bgClr="transparent"
-            value={sessionTitle}
-            onChange={(e) => {
-              setSessionTitle(e.target.value);
-              if (e.target.value) {
-                setErrors((prev) => ({ ...prev, sessionTitle: "" }));
-              }
-            }}
-          />
-          {errors.sessionTitle && (
-            <span className="error">{errors.sessionTitle}</span>
-          )}
-         </div>
           <div className="inputWrapper">
-          <TextField
-            variant="textarea"
-            label="About"
-            parentClass="textareaHolder"
-            value={about}
-            onChange={(e) => {
-              setAbout(e.target.value);
-              if (e.target.value) {
-                setErrors((prev) => ({ ...prev, about: "" }));
-              }
-            }}
-          />
-          {errors.about && <span className="error">{errors.about}</span>}
+            <TextField
+              parentClass="inputHolder"
+              className="input-field"
+              field_Name="title"
+              type="text"
+              label="Title"
+              name="title"
+              bgClr="transparent"
+              value={sessionTitle}
+              onChange={(e) => {
+                setSessionTitle(e.target.value);
+                if (e.target.value) {
+                  setErrors((prev) => ({ ...prev, sessionTitle: "" }));
+                }
+              }}
+            />
+            {errors.sessionTitle && (
+              <span className="error">{errors.sessionTitle}</span>
+            )}
+          </div>
+          <div className="inputWrapper">
+            <TextField
+              variant="textarea"
+              label="About"
+              parentClass="textareaHolder"
+              value={about}
+              onChange={(e) => {
+                setAbout(e.target.value);
+                if (e.target.value) {
+                  setErrors((prev) => ({ ...prev, about: "" }));
+                }
+              }}
+            />
+            {errors.about && <span className="error">{errors.about}</span>}
           </div>
           <div className="timeWrap">
             <span className="heading">Date & Time</span>
@@ -199,151 +217,161 @@ const CreateSession = ({ click, onSave, user, data }) => {
               <div className="start">
                 <span className="heading">Start From</span>
                 <div className="btnFlex">
-                 <div className="inputWrapper">
-                 <strong>
-                    <img src={date} alt="date" />
-                    <DatePicker
-                      selected={startDate}
-                      onChange={(date) => {
-                        setStartDate(date);
-                        if (date) {
-                          setErrors((prev) => ({ ...prev, startDate: "" }));
-                        }
-                      }}
-                      dateFormat="yyyy/MM/dd"
-                      placeholderText="Select Date"
-                      minDate={new Date()}
-                    />
-                  </strong>
-                  {errors.startDate && (
-                    <span className="error">{errors.startDate}</span>
-                  )}
-                 </div>
-                 <div className="Wrapper">
-                 <strong>
-                    <img src={time} alt="time" />
-                    <TimePicker
-                      onChange={(time) => {
-                        setStartTime(time);
-                        if (time) {
-                          setErrors((prev) => ({ ...prev, startTime: "" }));
-                        }
-                      }}
-                      value={startTime}
-                      disableClock={true}
-                      format="hh:mm a"
-                    />
-                  </strong>
-                  {errors.startTime && (
-                    <span className="error">{errors.startTime}</span>
-                  )}
-                 </div>
+                  <div className="inputWrapper">
+                    <strong>
+                      <img src={date} alt="date" />
+                      <DatePicker
+                        selected={startDate}
+                        onChange={(date) => {
+                          setStartDate(date);
+                          if (date) {
+                            setErrors((prev) => ({ ...prev, startDate: "" }));
+                          }
+                        }}
+                        dateFormat="yyyy/MM/dd"
+                        placeholderText="Select Date"
+                        minDate={new Date()}
+                      />
+                    </strong>
+                    {errors.startDate && (
+                      <span className="error">{errors.startDate}</span>
+                    )}
+                  </div>
+                  <div className="Wrapper">
+                    <strong>
+                      <img src={time} alt="time" />
+                      <TimePicker
+                        onChange={(time) => {
+                          setStartTime(time);
+                          if (time) {
+                            setErrors((prev) => ({ ...prev, startTime: "" }));
+                          }
+                        }}
+                        value={startTime}
+                        disableClock={true}
+                        format="hh:mm a"
+                      />
+                    </strong>
+                    {errors.startTime && (
+                      <p className="error">{errors.startTime}</p>
+                    )}
+                  </div>
                 </div>
               </div>
               <div className="end">
                 <span className="heading">Ends On</span>
                 <div className="btnFlex">
-                 <div className="inputWrapper">
-                 <strong>
-                    <img src={date} alt="date" />
-                    <DatePicker
-                      selected={endDate}
-                      onChange={(date) => {
-                        setEndDate(date);
-                        if (date) {
-                          setErrors((prev) => ({ ...prev, endDate: "" }));
-                        }
-                      }}
-                      dateFormat="yyyy/MM/dd"
-                      placeholderText="Select Date"
-                      minDate={startDate || new Date()}
-                    />
-                  </strong>
-                  {errors.endDate && (
-                    <span className="error">{errors.endDate}</span>
-                  )}
-                 </div>
-                 <div className="Wrapper">
-                 <strong>
-                    <img src={time} alt="time" />
-                    <TimePicker
-                      onChange={(time) => {
-                        setEndTime(time);
-                        if (time) {
-                          setErrors((prev) => ({ ...prev, endTime: "" }));
-                        }
-                      }}
-                      value={endTime}
-                      disableClock={true}
-                      format="hh:mm a"
-                    />
-                  </strong>
-                  {errors.endTime && (
-                    <span className="error">{errors.endTime}</span>
-                  )}
-                 </div>
+                  <div className="inputWrapper">
+                    <strong>
+                      <img src={date} alt="date" />
+                      <DatePicker
+                        selected={endDate}
+                        onChange={(date) => {
+                          setEndDate(date);
+                          if (date) {
+                            setErrors((prev) => ({ ...prev, endDate: "" }));
+                          }
+                        }}
+                        dateFormat="yyyy/MM/dd"
+                        placeholderText="Select Date"
+                        minDate={startDate || new Date()}
+                      />
+                    </strong>
+                    {errors.endDate && (
+                      <span className="error">{errors.endDate}</span>
+                    )}
+                  </div>
+                  <div className="Wrapper">
+                    <strong>
+                      <img src={time} alt="time" />
+                      <TimePicker
+                        onChange={(time) => {
+                          setEndTime(time);
+                          if (time) {
+                            setErrors((prev) => ({ ...prev, endTime: "" }));
+                          }
+                        }}
+                        value={endTime}
+                        disableClock={true}
+                        format="hh:mm a"
+                      />
+                    </strong>
+                    {errors.endTime && (
+                      <p className="error">{errors.endTime}</p>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
           </div>
 
           <div className="upload">
-            <div className="Upload">
-              <span className="heading">Upload Image</span>
-              <div className="inputWrapper">
-                <div className="uploadImage">
-                  <input
-                    type="file"
-                    id="uploadImage"
-                    onChange={handleImageUpload}
-                    accept="image/*"
-                    hidden
-                  />
-                  {uploadedImage ? (
-                    <div className="uploadPlaceholder">
-                      <img src={uploadedImage} alt="uploaded" />
-                    </div>
-                  ) : (
-                    <div className="uploadPlaceholder">
-                      <img src={upload} alt="upload" />
-                    </div>
-                  )}
-                  {errors.image && (
-                    <span className="error">{errors.image}</span>
-                  )}
-                </div>
-                </div>
-            </div>
+      <div className="Upload">
+        <span className="heading">Upload Image</span>
+        <div className="inputWrapper">
+          <div className="uploadImage" onClick={handleClick}>
+            <input
+              type="file"
+              id="uploadImage"
+              onChange={handleImageUpload}
+              accept="image/*"
+              hidden
+            />
+            {uploadedImage ? (
+              <div className="uploadPlaceholder">
+                <img src={uploadedImage} alt="uploaded" />
+              </div>
+            ) : (
+              <div className="uploadPlaceholder">
+                <img src={upload} alt="upload" />
+              </div>
+            )}
           </div>
+          {errors.image && (
+            <span
+              style={{
+                color: 'red',
+                fontSize: '12px',
+                marginTop: '5px',
+                display: 'block'
+              }}
+            >
+              {errors.image}
+            </span>
+          )}
+        </div>
+      </div>
+    </div>
           <div className="addTopic">
-             <h4 className="title">Add Topics</h4>
-          {topics.map((topic, index) => (
-            <div className="topic" key={index}>
-              <TextField
-                parentClass="inputHolder"
-                className="input-field"
-                field_Name="title"
-                type="text"
-                label={`Title ${index + 1} `}
-                name={`topicTitle${index}`}
-                bgClr="transparent"
-                value={topic.title}
-                onChange={(e) =>
-                  handleTopicChange(index, "title", e.target.value)
-                }
-              />
-              <TextField
-                variant="textarea"
-                label=" Description"
-                parentClass="textareaHolder"
-                value={topic.description}
-                onChange={(e) =>
-                  handleTopicChange(index, "description", e.target.value)
-                }
-              />
-            </div>
-          ))}
-          {errors.topics && <span className="error">{errors.topics}</span>}</div>
+            <h4 className="title">Add Topics</h4>
+            {topics.map((topic, index) => (
+              <div className="topic" key={index}>
+                <TextField
+                  parentClass="inputHolder"
+                  className="input-field"
+                  field_Name="title"
+                  type="text"
+                  label={`Title ${index + 1} `}
+                  name={`topicTitle${index}`}
+                  bgClr="transparent"
+                  value={topic.title}
+                  onChange={(e) =>
+                    handleTopicChange(index, "title", e.target.value)
+                  }
+                />
+                <TextField
+                  variant="textarea"
+                  label=" Description"
+                  parentClass="textareaHolder"
+                  value={topic.description}
+                  onChange={(e) =>
+                    handleTopicChange(index, "description", e.target.value)
+                  }
+                />
+              </div>
+            ))}
+            {errors.topics && <span className="error">{errors.topics}</span>}
+          </div>
           <div className="addMore">
             <Button
               className="addButton"
@@ -357,7 +385,6 @@ const CreateSession = ({ click, onSave, user, data }) => {
             <h4 className="title">Session Info</h4>
             <div className="flexWrap">
               <div className="drop1">
-
                 <Dropdown
                   width="500px"
                   label="Session For"
@@ -375,28 +402,27 @@ const CreateSession = ({ click, onSave, user, data }) => {
               </div>
             </div>
           </div>
-<div className="inputWrapper">
-  
-<TextField
-            parentClass="inputHolder"
-            className="input-field"
-            field_Name="url"
-            type="text"
-            label="Session URL"
-            name="sessionUrl"
-            bgClr="transparent"
-            value={sessionURL}
-            onChange={(e) => {
-              setSessionURL(e.target.value);
-              if (e.target.value) {
-                setErrors((prev) => ({ ...prev, sessionURL: "" }));
-              }
-            }}
-          />
-          {errors.sessionURL && (
-            <span className="error">{errors.sessionURL}</span>
-          )}
-</div>
+          <div className="inputWrapper">
+            <TextField
+              parentClass="inputHolder"
+              className="input-field"
+              field_Name="url"
+              type="text"
+              label="Session URL"
+              name="sessionUrl"
+              bgClr="transparent"
+              value={sessionURL}
+              onChange={(e) => {
+                setSessionURL(e.target.value);
+                if (e.target.value) {
+                  setErrors((prev) => ({ ...prev, sessionURL: "" }));
+                }
+              }}
+            />
+            {errors.sessionURL && (
+              <span className="error">{errors.sessionURL}</span>
+            )}
+          </div>
 
           <Button
             width="230px"

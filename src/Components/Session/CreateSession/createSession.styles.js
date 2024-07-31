@@ -61,6 +61,7 @@ export const CreateWrapper = styled.div`
       gap: 20px;
       flex-wrap: wrap;
       strong {
+        height: 37px;
         display: flex;
         border: 1px solid var(--gray-30);
         padding: 5px;
@@ -84,10 +85,10 @@ export const CreateWrapper = styled.div`
           background: transparent;
           border: none;
         }
-        .react-time-picker__wrapper{
+        .react-time-picker__wrapper {
           border: none;
         }
-        .react-time-picker__clear-button{
+        .react-time-picker__clear-button {
           display: none;
         }
       }
@@ -105,29 +106,29 @@ export const CreateWrapper = styled.div`
       align-items: center; */
     }
   }
-  
-    .flexWrap {
-      display: block;
 
-      @media (min-width: 768px) {
-        display: flex;
-        gap: 50px;
-      }
-      .drop1 {
-        flex-shrink: 0;
-        width: 300px;
-      }
-      .drop2 {
-        flex-grow: 1;
-      }
+  .flexWrap {
+    display: block;
+
+    @media (min-width: 768px) {
+      display: flex;
+      gap: 50px;
     }
-  
-  .addTopic{
+    .drop1 {
+      flex-shrink: 0;
+      width: 300px;
+    }
+    .drop2 {
+      flex-grow: 1;
+    }
+  }
+
+  .addTopic {
     padding-bottom: 20px;
   }
-  .inputWrapper{
+  .inputWrapper {
     display: block;
-    span{
+    span {
       color: red;
       font-size: 14px;
       font-weight: bold;
@@ -135,13 +136,20 @@ export const CreateWrapper = styled.div`
       display: block;
     }
   }
-  .Wrapper{
-    span{
+  .Wrapper {
+    span,p {
       color: red;
       font-size: 14px;
       font-weight: bold;
       margin-bottom: 10px;
- 
     }
+  }
+  .react-time-picker__inputGroup__leadingZero {
+    color: black !important;
+    font-size: inherit !important;
+    font-weight: inherit !important;
+  }
+  .react-time-picker__inputGroup__divider{
+    color: black !important;
   }
 `;
